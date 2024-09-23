@@ -429,12 +429,12 @@ static void handle_configure_request(xcb_configure_request_event_t *event) {
             goto out;
         }
 
-        if ((config.focus_on_window_activation == FOWA_FOCUS && config.popup_during_fullscreen!=PDF_ALL) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(workspace))) {
+        if ((config.focus_on_window_activation == FOWA_FOCUS &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(workspace))) {
             DLOG("Focusing con = %p\n", con);
             workspace_show(workspace);
             con_activate_unblock(con);
             tree_render();
-        } else if ((config.focus_on_window_activation == FOWA_URGENT && config.popup_during_fullscreen!=PDF_ALL) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(workspace))) {
+        } else if ((config.focus_on_window_activation == FOWA_URGENT &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(workspace))) {
             DLOG("Marking con = %p urgent\n", con);
             con_set_urgency(con, true);
             con = remanage_window(con);
@@ -799,10 +799,10 @@ static void handle_client_message(xcb_client_message_event_t *event) {
                 return;
             }
 
-            if ((config.focus_on_window_activation == FOWA_FOCUS && config.popup_during_fullscreen!=PDF_ALL) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(ws))) {
+            if ((config.focus_on_window_activation == FOWA_FOCUS &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(ws))) {
                 DLOG("Focusing con = %p\n", con);
                 con_activate_unblock(con);
-            } else if ((config.focus_on_window_activation == FOWA_URGENT && config.popup_during_fullscreen!=PDF_ALL) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(ws))) {
+            } else if ((config.focus_on_window_activation == FOWA_URGENT &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(ws))) {
                 DLOG("Marking con = %p urgent\n", con);
                 con_set_urgency(con, true);
                 con = remanage_window(con);
