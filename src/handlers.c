@@ -429,12 +429,12 @@ static void handle_configure_request(xcb_configure_request_event_t *event) {
             goto out;
         }
 
-        if ((config.focus_on_window_activation == FOWA_FOCUS &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(workspace))) {
+        if ((config.focus_on_window_activation == FOWA_FOCUS && !fullscreen) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(workspace))) {
             DLOG("Focusing con = %p\n", con);
             workspace_show(workspace);
             con_activate_unblock(con);
             tree_render();
-        } else if ((config.focus_on_window_activation == FOWA_URGENT &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(workspace))) {
+        } else if ((config.focus_on_window_activation == FOWA_URGENT && !fullscreen) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(workspace))) {
             DLOG("Marking con = %p urgent\n", con);
             con_set_urgency(con, true);
             con = remanage_window(con);
@@ -734,6 +734,7 @@ static void handle_net_wm_state_change(Con *con, uint32_t change, uint32_t atom)
 static void handle_client_message(xcb_client_message_event_t *event) {
     /* If this is a startup notification ClientMessage, the library will handle
      * it and call our monitor_event() callback. */
+
     if (sn_xcb_display_process_event(sndisplay, (xcb_generic_event_t *)event)) {
         return;
     }
@@ -799,10 +800,12 @@ static void handle_client_message(xcb_client_message_event_t *event) {
                 return;
             }
 
-            if ((config.focus_on_window_activation == FOWA_FOCUS &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(ws))) {
+            Con *workspace = con_get_workspace(con);
+            Con *fullscreen = con_get_fullscreen_covering_ws(workspace);
+            if ((config.focus_on_window_activation == FOWA_FOCUS && !fullscreen) || (config.focus_on_window_activation == FOWA_SMART && workspace_is_visible(ws))) {
                 DLOG("Focusing con = %p\n", con);
                 con_activate_unblock(con);
-            } else if ((config.focus_on_window_activation == FOWA_URGENT &&  !con_is_floating(con)) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(ws))) {
+            } else if ((config.focus_on_window_activation == FOWA_URGENT && !fullscreen) || (config.focus_on_window_activation == FOWA_SMART && !workspace_is_visible(ws))) {
                 DLOG("Marking con = %p urgent\n", con);
                 con_set_urgency(con, true);
                 con = remanage_window(con);
