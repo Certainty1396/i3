@@ -100,14 +100,14 @@ bool scratchpad_show(Con *con) {
 
     /* If the current con or any of its parents are in fullscreen mode, we
      * first need to disable it before showing the scratchpad con. */
-    /*Con *fs = focused;
+    Con *fs = focused;
     while (fs && fs->fullscreen_mode == CF_NONE) {
         fs = fs->parent;
     }
 
     if (fs && fs->type != CT_WORKSPACE) {
         con_toggle_fullscreen(fs, CF_OUTPUT);
-    }*/
+    }
 
     /* If this was 'scratchpad show' without criteria, we check if there is a
      * unfocused scratchpad on the current workspace and focus it */
